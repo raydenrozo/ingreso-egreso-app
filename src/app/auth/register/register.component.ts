@@ -1,20 +1,27 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
+import { Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { AppState } from 'src/app/app.reducer';
+import * as ui from '../../shared/ui.actions';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styles: []
 })
-export class RegisterComponent implements OnInit {
+export class RegisterComponent implements OnInit, OnDestroy {
 
   registroForm: FormGroup;
+  uiSuscription$: Subscription;
+  cargando: boolean;
 
   constructor( private fb: FormBuilder,
-              private authService: AuthService,
-              private router: Router) { }
+               private authService: AuthService,
+               private store: Store<AppState>,
+               private router: Router) { }
 
   ngOnInit(): void {
     this.registroForm = this.fb.group({
@@ -22,28 +29,38 @@ export class RegisterComponent implements OnInit {
       correo: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
+    this.uiSuscription$ = this.store.select('ui')
+                            .subscribe( ui => this.cargando = ui.isLoading);
+  }
 
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.uiSuscription$.unsubscribe();
   }
 
   crearUsuario() {
 
     if ( this.registroForm.invalid ) { return; }
 
-    Swal.fire({
-      title: 'Espere por favor!',
-      onBeforeOpen: () => {
-        Swal.showLoading();
-      }
-    });
+    this.store.dispatch( ui.isLoading() );
+    // Swal.fire({
+    //   title: 'Espere por favor!',
+    //   onBeforeOpen: () => {
+    //     Swal.showLoading();
+    //   }
+    // });
 
     //destructuracion de objetos
     const {nombre, correo, password} = this.registroForm.value;
     this.authService.crearUsuario(nombre, correo, password)
       .then(credenciales => {
-        Swal.close();
+        //Swal.close();
+        this.store.dispatch( ui.stopLoading() );
         this.router.navigate(['/']);
       })
       .catch(err => {
+        this.store.dispatch( ui.stopLoading() );
         Swal.fire({
           icon: 'error',
           title: 'Oops...',

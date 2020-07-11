@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './login.component.html',
   styles: []
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
 
   loginForm: FormGroup;
   cargando = false;
@@ -58,7 +58,7 @@ export class LoginComponent implements OnInit {
     this.authService.loginUsuario(email, password)
     .then( response => {
      // Swal.close();
-      console.log(response);
+      // console.log(response);
       this.store.dispatch( ui.stopLoading() );
       this.router.navigate(['/']);
     })

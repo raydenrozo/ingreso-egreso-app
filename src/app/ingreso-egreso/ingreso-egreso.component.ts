@@ -36,11 +36,10 @@ export class IngresoEgresoComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.uiSuscription$.unsubscribe();
+    this.isCargando = false;
   };
 
   guardar(){
-
-
 
     if (this.ingresoEgresoForm.invalid) { return; }
     this.store.dispatch( ui.isLoading() );

@@ -38,8 +38,7 @@ export class AuthService {
       } else {
         //no existe
         this._user = null;
-        if (this.userSubsCription$) { this.userSubsCription$.unsubscribe(); }
-        
+        this.userSubsCription$?.unsubscribe();
         this.store.dispatch( authActions.unSetUser() );
         this.store.dispatch( ingresoEgresoActions.unSetItems());
       }

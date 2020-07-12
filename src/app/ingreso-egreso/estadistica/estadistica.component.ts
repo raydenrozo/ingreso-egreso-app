@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AppState } from 'src/app/app.reducer';
 import { IngresoEgreso } from '../../models/ingreso-egreso.model';
 import { ChartType } from 'chart.js';
 import { MultiDataSet, Label } from 'ng2-charts';
+import { AppStateWithIngreso } from '../ingres-egreso.reducer';
 
 @Component({
   selector: 'app-estadistica',
@@ -24,7 +24,7 @@ export class EstadisticaComponent implements OnInit {
   totalIngreso: number = 0;
   totalEgreso: number = 0;
 
-  constructor( private store: Store<AppState>) { }
+  constructor( private store: Store<AppStateWithIngreso>) { }
 
   ngOnInit(): void {
     this.store.select('ingresosEgresos')
@@ -33,7 +33,7 @@ export class EstadisticaComponent implements OnInit {
       })
   }
 
-  generarEstadisticas( items: IngresoEgreso) {
+  generarEstadisticas( items: IngresoEgreso[]) {
     this.totalIngreso = 0;
     this.totalEgreso = 0;
     this.ingreso = 0;
